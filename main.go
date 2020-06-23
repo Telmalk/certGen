@@ -9,16 +9,15 @@ import (
 	"training.go/gencert/pdf"
 )
 
-func main()  {
 
-	outputType := flag.String("type", "pdf", "Output type of the certificate")
-	flag.Parse()
-	/*
-	if err != nil {
-		fmt.Println(err)
+func main()  {
+	file := flag.String("file", "student.csv", "CSV file input")
+	if len(*file) <= 0 {
+		fmt.Printf("Invalid file. got=%v", *file)
 		os.Exit(1)
 	}
-	*/
+	outputType := flag.String("type", "pdf", "Output type of the certificate")
+	flag.Parse()
 	var saver cert.Saver
 	var err error
 	switch *outputType {
@@ -34,12 +33,15 @@ func main()  {
 		os.Exit(1)
 	}
 	// c, err := cert.New("GoLang", "Boby", "2020-06-16")
-	certs, err := cert.ParseCSV("student.csv")
+	certs, err := cert.ParseCSV(*file)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	for _, c := range certs {
-		err := saver.Save(*c)
+		err = saver.Save(*c)
 		if err != nil {
 			fmt.Println(err)
-			os.Exit(1)
 		}
 	}
 }
